@@ -29,6 +29,7 @@ class Auth extends CI_Controller
         $username = $this->input->post('username');
         $password = $this->input->post('password');
 
+
         $user = $this->db->get_where('user', ['username' => $username])->row_array();
 
         if ($user) {
@@ -36,8 +37,11 @@ class Auth extends CI_Controller
                 $data = [
                     'unique_id' => $user['unique_id'],
                     'username' => $user['username'],
+
                     'role_id' => $user['role_id']
                 ];
+
+
                 $this->session->set_userdata($data);
                 if ($user['role_id'] == 1) {
                     redirect('admin');
@@ -46,6 +50,7 @@ class Auth extends CI_Controller
                 }
             } else {
 
+                $this->load->model('Messagemodel');
                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert" > 
                 Sepertinya ada salah dengan password atau username anda.</div>');
                 redirect('auth');
@@ -61,6 +66,7 @@ class Auth extends CI_Controller
 
 
         $this->form_validation->set_rules('username', 'Username', 'required|trim');
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
         $this->form_validation->set_rules('password1', 'Password', 'required|trim|min_length[8]|matches[password2]');
         $this->form_validation->set_rules('password2', 'Password', 'required|trim|matches[password1]');
 
@@ -73,12 +79,14 @@ class Auth extends CI_Controller
             $data = [
                 'unique_id' => $unique_id,
                 'username' => htmlspecialchars($this->input->post('username', true)),
+                'name' => htmlspecialchars($this->input->post('name', true)),
                 'password' => password_hash($this->input->post('password1'), PASSWORD_DEFAULT),
-
                 'user_status' => $user_status,
                 'role_id' => 2,
                 'date_created' => time()
             ];
+
+
 
             $this->db->insert('user', $data);
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert" > 

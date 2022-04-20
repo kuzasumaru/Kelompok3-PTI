@@ -19,6 +19,8 @@ class Menu extends CI_Controller
 		}
 	}
 
+
+
 	public function index()
 	{
 		$data = $this->data;
@@ -29,11 +31,15 @@ class Menu extends CI_Controller
 
 		$this->load->library('pagination');
 
-		$config['base_url'] = 'http://localhost/ci-coffee-shop/menu/index';
-		$config['total_rows'] = $this->modelmenu->jumlahdata(); //$jumlah_data; //$totalMenu
+		$config['base_url'] = 'http://localhost/coffee-shop/menu/index/';
+		$config['total_rows'] = $this->modelmenu->jumlahdata();
+		$config['uri_segment'] = 3;
+		$config['use_page_numbers'] = TRUE;
+
+		//$jumlah_data; //$totalMenu
 		//var_dump($config['total_rows']);
 		//die;
-		$config['per_page'] = 4;
+		$config['per_page'] = 8;
 
 		$config['full_tag_open'] = '<nav aria-label="Page navigation example"><ul class="pagination">';
 		$config['full_tag_close'] = '</ul></nav>';
@@ -56,10 +62,14 @@ class Menu extends CI_Controller
 
 		$this->pagination->initialize($config);
 
-		$data['start'] = $this->uri->segment(2);
+		$data['start'] = $this->uri->segment(3);
 		$data['menu'] = $this->modelmenu->getMenu($config['per_page'], $data['start']);
+
 		//$data['menu'] = $this->db->get('menu', $config['per_page'], $start)->result_array();
 		//$data['menu'] = $this->modelmenu->getMenu($config['per_page'], $data['start']);
+
+		//var_dump($data['menu']);
+		//die;
 
 		$this->load->view('layouts/_header', $data);
 		$this->load->view('menu/index');
@@ -68,6 +78,7 @@ class Menu extends CI_Controller
 
 	public function pesan($menu_id)
 	{
+
 		$menu = $this->db->get_where('menu', ['id' => $menu_id])->row_array();
 		$harga = $menu['harga'];
 
@@ -109,33 +120,6 @@ class Menu extends CI_Controller
 			$this->db->insert('pesanan', $data);
 		}
 
-		redirect('menu');
-	}
-
-	public function tambah_menu()
-	{
-		$data = $this->data;
-		$data['title'] = 'Tambah Menu';
-
-		$this->load->view('layouts/_header', $data);
-		$this->load->view('menu/tambah_menu', $data);
-		$this->load->view('layouts/_footer');
-	}
-
-	public function simpanmenubaru()
-	{
-		$menu = $this->input->post('kopi');
-		$harga = $this->input->post('harga');
-		$deskripsi = $this->input->post('deskrpsi');
-
-		$data = array(
-			'kopi' => $menu,
-			'harga' => $harga,
-			'deskrpsi' => $deskripsi,
-			'date_created' => time()
-		);
-
-		$this->modelmenu->simpanmenubaru($data, 'menu');
 		redirect('menu');
 	}
 }

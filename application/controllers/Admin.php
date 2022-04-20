@@ -16,7 +16,7 @@ class Admin extends CI_Controller
         //$data['user'] = $this->db->get_where('user', ['username' =>
         //$this->session->userdata('username')])->row_array();
 
-        $data['title'] = 'Coffee Shop';
+        $data['title'] = '.NEMU';
         $this->load->view('layouts/_headeradmin', $data);
         $this->load->view('admin/index');
         $this->load->view('layouts/_footer');

@@ -11,6 +11,7 @@ class Chat extends CI_Controller
             redirect('auth');
         }
 
+
         $this->load->library('session');
         $this->load->database();
         $this->load->helper(array('url', 'form'));
@@ -27,6 +28,7 @@ class Chat extends CI_Controller
         $data = $this->data;
         $data['title'] = 'Chat';
         $teman = $this->db->get('user');
+        //$teman = $this->db->where('id !=', $this->user->id)->get('users');
         $this->load->view('layouts/_header', $data);
         $this->load->view('chat_dashboard', array(
             'teman' => $teman
@@ -43,10 +45,10 @@ class Chat extends CI_Controller
 
             // Get Chats
             $chats = $this->db
-                ->select('chat.*, user.username')
+                ->select('chat.*, user.name')
                 ->from('chat')
-                ->join('user', 'chat.send_by = user.unique_id')
-                ->where('(send_by = ' . $this->user->id . ' AND send_to = ' . $friend->id . ')')
+                ->join('user', 'chat.send_by = user.id')
+                ->where('(send_by = ' . $this->db->user->id . ' AND send_to = ' . $friend->id . ')')
                 ->or_where('(send_to = ' . $this->user->id . ' AND send_by = ' . $friend->id . ')')
                 ->order_by('chat.time', 'desc')
                 ->limit(100)
@@ -54,8 +56,8 @@ class Chat extends CI_Controller
                 ->result();
 
             $result = array(
-                'username' => $friend->name,
-                'chats' => $chats
+                'name' => $friend->name,
+                'chat' => $chats
             );
             echo json_encode($result);
         }
